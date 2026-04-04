@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@benyoriki Store — Belanja Mudah, Harga Terbaik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="toast"></div>
+
+<!-- CART SIDEBAR -->
+<div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+<div id="cartSidebar" class="cart-sidebar">
+  <div class="cart-header">
+    <h3>🛒 Keranjang Belanja</h3>
+    <button onclick="closeCart()" class="close-btn">✕</button>
+  </div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total:</span>
+      <span id="cartTotal">Rp 0</span>
+    </div>
+    <button onclick="checkout()" class="btn-checkout">Bayar Sekarang</button>
+  </div>
+</div>
+
+<!-- MODAL PRODUCT DETAIL -->
+<div id="productModal" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button onclick="closeModal()" class="modal-close">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="loginModal" class="modal-overlay" onclick="closeLoginModal(event)">
+  <div class="modal-box login-box">
+    <button onclick="closeLoginModal()" class="modal-close">✕</button>
+    <div class="login-header">
+      <div class="login-icon">🔐</div>
+      <h2>Admin Login</h2>
+      <p>Masukkan kredensial untuk mengakses panel admin</p>
+    </div>
+    <div class="login-form">
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="admin" />
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+      </div>
+      <button onclick="doLogin()" class="btn-login">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="mainHeader">
+  <div class="header-inner">
+    <div class="logo" onclick="showPage('shop')">
+      <span class="logo-icon">🛍</span>
+      <span class="logo-text">@benyoriki<span>Store</span></span>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Cari produk, brand, kategori..." oninput="handleSearch()" />
+      <button class="search-btn">🔍</button>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openCart()">
+        🛒 <span id="cartBadge" class="badge">0</span>
+      </button>
+      <button class="icon-btn wishlist-btn" onclick="showPage('wishlist')">❤️ <span id="wishBadge" class="badge">0</span></button>
+      <button id="adminToggle" class="btn-admin" onclick="handleAdminClick()">⚙️ Admin</button>
+    </div>
+  </div>
+
+  <!-- CATEGORY NAV -->
+  <div class="category-nav">
+    <button class="cat-btn active" onclick="filterCategory('all', this)">Semua</button>
+    <button class="cat-btn" onclick="filterCategory('elektronik', this)">📱 Elektronik</button>
+    <button class="cat-btn" onclick="filterCategory('fashion', this)">👗 Fashion</button>
+    <button class="cat-btn" onclick="filterCategory('makanan', this)">🍔 Makanan</button>
+    <button class="cat-btn" onclick="filterCategory('kecantikan', this)">💄 Kecantikan</button>
+    <button class="cat-btn" onclick="filterCategory('olahraga', this)">⚽ Olahraga</button>
+    <button class="cat-btn" onclick="filterCategory('rumah', this)">🏠 Rumah</button>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="mainContent">
+
+  <!-- SHOP PAGE -->
+  <section id="shopPage" class="page active">
+    <!-- HERO BANNER -->
+    <div class="hero-banner">
+      <div class="hero-slide active" style="background: linear-gradient(135deg, #f97316 0%, #ef4444 100%)">
+        <div class="hero-text">
+          <span class="hero-tag">🔥 Flash Sale Hari Ini</span>
+          <h2>Diskon Hingga<br><strong>70% OFF</strong></h2>
+          <p>Jangan sampai kehabisan, stok terbatas!</p>
+          <button onclick="filterCategory('all', document.querySelector('.cat-btn'))">Belanja Sekarang →</button>
+        </div>
+        <div class="hero-img">🛍️</div>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-item"><span class="stat-icon">📦</span><div><strong id="statProducts">0</strong><small>Produk</small></div></div>
+      <div class="stat-item"><span class="stat-icon">⭐</span><div><strong>4.9</strong><small>Rating</small></div></div>
+      <div class="stat-item"><span class="stat-icon">🚀</span><div><strong>Gratis</strong><small>Ongkir</small></div></div>
+      <div class="stat-item"><span class="stat-icon">🔄</span><div><strong>30 Hari</strong><small>Return</small></div></div>
+    </div>
+
+    <!-- FLASH SALE SECTION -->
+    <div class="section-header">
+      <div class="section-title">
+        <span class="flash-icon">⚡</span>
+        <h3>Flash Sale</h3>
+        <div class="countdown" id="countdown"></div>
+      </div>
+      <a href="#" class="see-all">Lihat Semua →</a>
+    </div>
+    <div id="flashSaleList" class="product-grid"></div>
+
+    <!-- ALL PRODUCTS -->
+    <div class="section-header">
+      <div class="section-title">
+        <h3>🏪 Semua Produk</h3>
+      </div>
+      <div class="sort-control">
+        <select onchange="sortProducts(this.value)">
+          <option value="default">Urutkan</option>
+          <option value="price-asc">Harga Terendah</option>
+          <option value="price-desc">Harga Tertinggi</option>
+          <option value="rating">Rating Terbaik</option>
+          <option value="newest">Terbaru</option>
+        </select>
+      </div>
+    </div>
+    <div id="productList" class="product-grid"></div>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <h3>Produk tidak ditemukan</h3>
+      <p>Coba kata kunci lain atau lihat semua produk</p>
+    </div>
+  </section>
+
+  <!-- WISHLIST PAGE -->
+  <section id="wishlistPage" class="page">
+    <div class="page-header">
+      <h2>❤️ Wishlist Saya</h2>
+    </div>
+    <div id="wishlistGrid" class="product-grid"></div>
+    <div id="wishlistEmpty" class="empty-state" style="display:none">
+      <div class="empty-icon">💔</div>
+      <h3>Wishlist kosong</h3>
+      <p>Tambahkan produk favorit kamu di sini</p>
+    </div>
+  </section>
+
+  <!-- ADMIN PAGE -->
+  <section id="adminPage" class="page">
+    <div class="admin-layout">
+
+      <!-- SIDEBAR ADMIN -->
+      <aside class="admin-sidebar">
+        <div class="admin-profile">
+          <div class="admin-avatar">👨‍💼</div>
+          <div>
+            <strong>Administrator</strong>
+            <small>@Benyoriki</small>
+          </div>
+        </div>
+        <nav class="admin-nav">
+          <button class="admin-nav-btn active" onclick="showAdminTab('dashboard', this)">📊 Dashboard</button>
+          <button class="admin-nav-btn" onclick="showAdminTab('products', this)">📦 Kelola Produk</button>
+          <button class="admin-nav-btn" onclick="showAdminTab('addProduct', this)">➕ Tambah Produk</button>
+          <button class="admin-nav-btn" onclick="showAdminTab('orders', this)">🧾 Pesanan</button>
+        </nav>
+        <button onclick="logout()" class="btn-logout">🚪 Keluar</button>
+      </aside>
+
+      <!-- ADMIN MAIN -->
+      <div class="admin-main">
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="admin-tab active">
+          <h2 class="admin-title">📊 Dashboard</h2>
+          <div class="dashboard-cards">
+            <div class="dash-card orange">
+              <div class="dash-icon">📦</div>
+              <div class="dash-info">
+                <strong id="dashProducts">0</strong>
+                <span>Total Produk</span>
+              </div>
+            </div>
+            <div class="dash-card green">
+              <div class="dash-icon">🧾</div>
+              <div class="dash-info">
+                <strong id="dashOrders">0</strong>
+                <span>Total Pesanan</span>
+              </div>
+            </div>
+            <div class="dash-card blue">
+              <div class="dash-icon">💰</div>
+              <div class="dash-info">
+                <strong id="dashRevenue">Rp 0</strong>
+                <span>Pendapatan</span>
+              </div>
+            </div>
+            <div class="dash-card red">
+              <div class="dash-icon">👥</div>
+              <div class="dash-info">
+                <strong id="dashVisitors">--</strong>
+                <span>Pengunjung</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-orders">
+            <h3>🧾 Pesanan Terbaru</h3>
+            <div id="recentOrdersList" class="orders-table-wrap">
+              <p class="empty-msg">Belum ada pesanan masuk.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCTS TAB -->
+        <div id="tab-products" class="admin-tab">
+          <h2 class="admin-title">📦 Kelola Produk</h2>
+          <div class="admin-toolbar">
+            <input type="text" placeholder="Cari produk..." oninput="adminSearch(this.value)" class="admin-search" />
+          </div>
+          <div id="adminProductList" class="admin-product-list"></div>
+        </div>
+
+        <!-- ADD PRODUCT TAB -->
+        <div id="tab-addProduct" class="admin-tab">
+          <h2 class="admin-title" id="addProductTitle">➕ Tambah Produk Baru</h2>
+          <div class="add-form">
+            <input type="hidden" id="editIndex" value="-1" />
+
+            <div class="form-row">
+              <div class="input-group">
+                <label>Nama Produk *</label>
+                <input type="text" id="pName" placeholder="Masukkan nama produk" />
+              </div>
+              <div class="input-group">
+                <label>Kategori *</label>
+                <select id="pCategory">
+                  <option value="">Pilih Kategori</option>
+                  <option value="elektronik">📱 Elektronik</option>
+                  <option value="fashion">👗 Fashion</option>
+                  <option value="makanan">🍔 Makanan</option>
+                  <option value="kecantikan">💄 Kecantikan</option>
+                  <option value="olahraga">⚽ Olahraga</option>
+                  <option value="rumah">🏠 Rumah</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="input-group">
+                <label>Harga (Rp) *</label>
+                <input type="number" id="pPrice" placeholder="Contoh: 150000" />
+              </div>
+              <div class="input-group">
+                <label>Harga Coret (Rp)</label>
+                <input type="number" id="pOrigPrice" placeholder="Harga asli sebelum diskon" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="input-group">
+                <label>Stok *</label>
+                <input type="number" id="pStock" placeholder="Jumlah stok tersedia" />
+              </div>
+              <div class="input-group">
+                <label>Rating (1-5)</label>
+                <input type="number" id="pRating" placeholder="4.5" min="1" max="5" step="0.1" />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Deskripsi Produk</label>
+              <textarea id="pDesc" placeholder="Deskripsikan produk Anda..." rows="3"></textarea>
+            </div>
+
+            <div class="input-group">
+              <label>URL Gambar *</label>
+              <input type="text" id="pImage" placeholder="https://... atau upload file" oninput="previewImage()" />
+              <div class="image-preview-wrap">
+                <img id="imgPreview" src="" alt="" style="display:none" />
+                <span id="imgPlaceholder" class="img-placeholder">👁 Preview gambar muncul di sini</span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Upload Gambar</label>
+              <div class="upload-area" onclick="document.getElementById('fileUpload').click()">
+                <input type="file" id="fileUpload" accept="image/*" onchange="handleFileUpload(event)" style="display:none" />
+                <div class="upload-content">
+                  <span class="upload-icon">📁</span>
+                  <p>Klik untuk upload gambar</p>
+                  <small>JPG, PNG, WebP — maks. 5MB</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-check">
+              <label class="check-label">
+                <input type="checkbox" id="pFlash" />
+                <span>⚡ Masukkan ke Flash Sale</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button onclick="saveProduct()" class="btn-save">💾 Simpan Produk</button>
+              <button onclick="resetForm()" class="btn-reset">🔄 Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDERS TAB -->
+        <div id="tab-orders" class="admin-tab">
+          <h2 class="admin-title">🧾 Daftar Pesanan</h2>
+          <div id="ordersList" class="orders-list">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <h3>Belum ada pesanan</h3>
+              <p>Pesanan dari pelanggan akan muncul di sini</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo"><span class="logo-icon">🛍</span><span class="logo-text">@Benyoriki<span>Store</span></span></div>
+      <p>Belanja mudah, cepat, dan terpercaya. Tersedia ribuan produk pilihan untuk kamu.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Layanan</h4>
+      <a href="https://www.instagram.com/benyoriki/">Tentang Kami</a>
+      <a href="https://www.instagram.com/benyoriki/">Cara Belanja</a>
+      <a href="https://www.instagram.com/benyoriki/">Kebijakan Return</a>
+      <a href="https://www.instagram.com/benyoriki/">Pusat Bantuan</a>
+    </div>
+    <div class="footer-links">
+      <h4>Pembayaran</h4>
+      <div class="payment-methods">
+        <span>💳 VISA</span><span>💳 Mastercard</span><span>🏦 Transfer</span><span>💚 GoPay</span><span>🔵 OVO</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 @Benyoriki Store. All rights reserved. Made with ❤️ in Indonesia</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
