@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@benyoriki Store — Belanja Mudah, Harga Terbaik</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<!-- Primary Meta -->
+<meta name="title" content="@benyoriki Store - Toko Online Modern & Terpercaya">
+<meta name="description" content="Belanja mudah, cepat, dan aman di @benyoriki Store. Temukan berbagai produk pilihan dengan harga terbaik, kualitas terjamin, dan pengalaman belanja modern dalam satu platform.">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://web189.github.io/toko-online/">
+<meta property="og:title" content="@benyoriki Store - Belanja Online Praktis & Modern">
+<meta property="og:description" content="Platform e-commerce modern untuk kebutuhan harian Anda.">
+<meta property="og:image" content="https://web189.github.io/toko-online/preview.jpg">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="@benyoriki Store - Smart Shopping Experience">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@benyoriki Store — Belanja Mudah, Harga Terbaik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.png">
 </head>
 <body>
 
 <!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast"></div>
+
+<!-- DARK MODE TOGGLE -->
+<button id="darkModeBtn" class="dark-mode-btn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+
+<!-- BACK TO TOP -->
+<button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- CART SIDEBAR -->
 <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
@@ -26,7 +45,7 @@
       <span>Total:</span>
       <span id="cartTotal">Rp 0</span>
     </div>
-    <button onclick="checkout()" class="btn-checkout">Bayar Sekarang</button>
+    <button onclick="checkout()" class="btn-checkout">⚡ Bayar Sekarang</button>
   </div>
 </div>
 
@@ -60,6 +79,57 @@
     </div>
   </div>
 </div>
+
+<!-- AI CHATBOT -->
+<div id="chatbotOverlay" class="chatbot-overlay" onclick="closeChatbot(event)"></div>
+<div id="chatbotContainer" class="chatbot-container">
+  <div class="chatbot-header">
+    <div class="chatbot-avatar">
+      <div class="chatbot-avatar-inner">🤖</div>
+      <div class="chatbot-status-dot"></div>
+    </div>
+    <div class="chatbot-header-info">
+      <strong>Benyo AI Assistant</strong>
+      <span class="chatbot-online">● Online</span>
+    </div>
+    <div class="chatbot-header-actions">
+      <button onclick="clearChat()" class="chatbot-clear-btn" title="Hapus riwayat">🗑️</button>
+      <button onclick="closeChatbot()" class="chatbot-close-btn">✕</button>
+    </div>
+  </div>
+  <div id="chatMessages" class="chat-messages">
+    <div class="chat-msg bot">
+      <div class="chat-bubble">
+        <p>Halo! Saya <strong>Benyo AI</strong> 👋</p>
+        <p>Saya siap membantu kamu belanja di @benyoriki Store! Tanya apa saja tentang produk, harga, promo, atau rekomendasi. 🛍️</p>
+      </div>
+      <div class="chat-time">Asisten AI</div>
+    </div>
+    <div class="chat-quick-btns">
+      <button onclick="quickChat('Produk apa yang lagi promo?')">🔥 Promo terbaru</button>
+      <button onclick="quickChat('Rekomendasi produk elektronik terbaik')">📱 Elektronik</button>
+      <button onclick="quickChat('Cara melakukan pembayaran?')">💳 Cara bayar</button>
+      <button onclick="quickChat('Produk fashion terpopuler')">👗 Fashion</button>
+    </div>
+  </div>
+  <div class="chat-typing" id="chatTyping" style="display:none">
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+  </div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Tanya tentang produk, promo, dll..." onkeydown="if(event.key==='Enter')sendChat()" />
+    <button onclick="sendChat()" class="chat-send-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</div>
+
+<!-- CHATBOT FAB -->
+<button id="chatbotFab" class="chatbot-fab" onclick="toggleChatbot()">
+  <span class="fab-icon">💬</span>
+  <span class="fab-badge" id="chatFabBadge" style="display:none">!</span>
+</button>
 
 <!-- HEADER -->
 <header id="mainHeader">
@@ -102,14 +172,39 @@
   <section id="shopPage" class="page active">
     <!-- HERO BANNER -->
     <div class="hero-banner">
-      <div class="hero-slide active" style="background: linear-gradient(135deg, #f97316 0%, #ef4444 100%)">
-        <div class="hero-text">
-          <span class="hero-tag">🔥 Flash Sale Hari Ini</span>
-          <h2>Diskon Hingga<br><strong>70% OFF</strong></h2>
-          <p>Jangan sampai kehabisan, stok terbatas!</p>
-          <button onclick="filterCategory('all', document.querySelector('.cat-btn'))">Belanja Sekarang →</button>
+      <div class="hero-slides-wrapper" id="heroSlider">
+        <div class="hero-slide active" style="background: linear-gradient(135deg, #f97316 0%, #ef4444 100%)">
+          <div class="hero-text">
+            <span class="hero-tag">🔥 Flash Sale Hari Ini</span>
+            <h2>Diskon Hingga<br><strong>70% OFF</strong></h2>
+            <p>Jangan sampai kehabisan, stok terbatas!</p>
+            <button onclick="filterCategory('all', document.querySelector('.cat-btn'))">Belanja Sekarang →</button>
+          </div>
+          <div class="hero-img">🛍️</div>
         </div>
-        <div class="hero-img">🛍️</div>
+        <div class="hero-slide" style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)">
+          <div class="hero-text">
+            <span class="hero-tag">✨ Produk Baru</span>
+            <h2>Teknologi<br><strong>Terkini 2026</strong></h2>
+            <p>Gadget terbaru dengan harga kompetitif!</p>
+            <button onclick="filterCategory('elektronik', document.querySelectorAll('.cat-btn')[1])">Lihat Elektronik →</button>
+          </div>
+          <div class="hero-img">📱</div>
+        </div>
+        <div class="hero-slide" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%)">
+          <div class="hero-text">
+            <span class="hero-tag">🚀 Gratis Ongkir</span>
+            <h2>Belanja Hemat<br><strong>Tanpa Batas</strong></h2>
+            <p>Pengiriman gratis ke seluruh Indonesia!</p>
+            <button onclick="toggleChatbot()">Tanya AI →</button>
+          </div>
+          <div class="hero-img">🎁</div>
+        </div>
+      </div>
+      <div class="hero-dots" id="heroDots">
+        <button class="hero-dot active" onclick="goToSlide(0)"></button>
+        <button class="hero-dot" onclick="goToSlide(1)"></button>
+        <button class="hero-dot" onclick="goToSlide(2)"></button>
       </div>
     </div>
 
@@ -119,6 +214,18 @@
       <div class="stat-item"><span class="stat-icon">⭐</span><div><strong>4.9</strong><small>Rating</small></div></div>
       <div class="stat-item"><span class="stat-icon">🚀</span><div><strong>Gratis</strong><small>Ongkir</small></div></div>
       <div class="stat-item"><span class="stat-icon">🔄</span><div><strong>30 Hari</strong><small>Return</small></div></div>
+    </div>
+
+    <!-- AI PROMO BANNER -->
+    <div class="ai-promo-banner" onclick="toggleChatbot()">
+      <div class="ai-promo-left">
+        <div class="ai-promo-icon">🤖</div>
+        <div>
+          <strong>Beny AI Assistant</strong>
+          <p>Tanya rekomendasi produk, promo, cara belanja & lebih banyak lagi!</p>
+        </div>
+      </div>
+      <button class="ai-promo-btn">Chat Sekarang →</button>
     </div>
 
     <!-- FLASH SALE SECTION -->
@@ -152,6 +259,7 @@
       <div class="empty-icon">🔍</div>
       <h3>Produk tidak ditemukan</h3>
       <p>Coba kata kunci lain atau lihat semua produk</p>
+      <button onclick="toggleChatbot()" class="btn-ask-ai">🤖 Tanya AI untuk rekomendasi</button>
     </div>
   </section>
 
@@ -171,19 +279,15 @@
   <!-- ADMIN PAGE -->
   <section id="adminPage" class="page">
     <div class="admin-layout">
-
-      <!-- SIDEBAR ADMIN -->
       <aside class="admin-sidebar">
         <div class="admin-profile">
-          <div class="admin-avatar">👨‍💼</div>
-          <div>
-            <strong>Administrator</strong>
-            <small>@Benyoriki</small>
-          </div>
+          <div class="admin-avatar">👤</div>
+          <strong>Administrator</strong>
+          <small>Super Admin</small>
         </div>
         <nav class="admin-nav">
           <button class="admin-nav-btn active" onclick="showAdminTab('dashboard', this)">📊 Dashboard</button>
-          <button class="admin-nav-btn" onclick="showAdminTab('products', this)">📦 Kelola Produk</button>
+          <button class="admin-nav-btn" onclick="showAdminTab('products', this)">📦 Produk</button>
           <button class="admin-nav-btn" onclick="showAdminTab('addProduct', this)">➕ Tambah Produk</button>
           <button class="admin-nav-btn" onclick="showAdminTab('orders', this)">🧾 Pesanan</button>
         </nav>
@@ -192,41 +296,27 @@
 
       <!-- ADMIN MAIN -->
       <div class="admin-main">
-
         <!-- DASHBOARD TAB -->
         <div id="tab-dashboard" class="admin-tab active">
           <h2 class="admin-title">📊 Dashboard</h2>
           <div class="dashboard-cards">
             <div class="dash-card orange">
               <div class="dash-icon">📦</div>
-              <div class="dash-info">
-                <strong id="dashProducts">0</strong>
-                <span>Total Produk</span>
-              </div>
+              <div class="dash-info"><strong id="dashProducts">0</strong><span>Total Produk</span></div>
             </div>
             <div class="dash-card green">
               <div class="dash-icon">🧾</div>
-              <div class="dash-info">
-                <strong id="dashOrders">0</strong>
-                <span>Total Pesanan</span>
-              </div>
+              <div class="dash-info"><strong id="dashOrders">0</strong><span>Total Pesanan</span></div>
             </div>
             <div class="dash-card blue">
               <div class="dash-icon">💰</div>
-              <div class="dash-info">
-                <strong id="dashRevenue">Rp 0</strong>
-                <span>Pendapatan</span>
-              </div>
+              <div class="dash-info"><strong id="dashRevenue">Rp 0</strong><span>Pendapatan</span></div>
             </div>
             <div class="dash-card red">
               <div class="dash-icon">👥</div>
-              <div class="dash-info">
-                <strong id="dashVisitors">--</strong>
-                <span>Pengunjung</span>
-              </div>
+              <div class="dash-info"><strong id="dashVisitors">--</strong><span>Pengunjung</span></div>
             </div>
           </div>
-
           <div class="recent-orders">
             <h3>🧾 Pesanan Terbaru</h3>
             <div id="recentOrdersList" class="orders-table-wrap">
@@ -249,7 +339,6 @@
           <h2 class="admin-title" id="addProductTitle">➕ Tambah Produk Baru</h2>
           <div class="add-form">
             <input type="hidden" id="editIndex" value="-1" />
-
             <div class="form-row">
               <div class="input-group">
                 <label>Nama Produk *</label>
@@ -268,7 +357,6 @@
                 </select>
               </div>
             </div>
-
             <div class="form-row">
               <div class="input-group">
                 <label>Harga (Rp) *</label>
@@ -279,7 +367,6 @@
                 <input type="number" id="pOrigPrice" placeholder="Harga asli sebelum diskon" />
               </div>
             </div>
-
             <div class="form-row">
               <div class="input-group">
                 <label>Stok *</label>
@@ -290,12 +377,10 @@
                 <input type="number" id="pRating" placeholder="4.5" min="1" max="5" step="0.1" />
               </div>
             </div>
-
             <div class="input-group">
               <label>Deskripsi Produk</label>
               <textarea id="pDesc" placeholder="Deskripsikan produk Anda..." rows="3"></textarea>
             </div>
-
             <div class="input-group">
               <label>URL Gambar *</label>
               <input type="text" id="pImage" placeholder="https://... atau upload file" oninput="previewImage()" />
@@ -304,7 +389,6 @@
                 <span id="imgPlaceholder" class="img-placeholder">👁 Preview gambar muncul di sini</span>
               </div>
             </div>
-
             <div class="input-group">
               <label>Upload Gambar</label>
               <div class="upload-area" onclick="document.getElementById('fileUpload').click()">
@@ -316,14 +400,12 @@
                 </div>
               </div>
             </div>
-
             <div class="form-check">
               <label class="check-label">
                 <input type="checkbox" id="pFlash" />
                 <span>⚡ Masukkan ke Flash Sale</span>
               </label>
             </div>
-
             <div class="form-actions">
               <button onclick="saveProduct()" class="btn-save">💾 Simpan Produk</button>
               <button onclick="resetForm()" class="btn-reset">🔄 Reset</button>
@@ -342,7 +424,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -355,6 +436,10 @@
     <div class="footer-brand">
       <div class="logo"><span class="logo-icon">🛍</span><span class="logo-text">@Benyoriki<span>Store</span></span></div>
       <p>Belanja mudah, cepat, dan terpercaya. Tersedia ribuan produk pilihan untuk kamu.</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/benyoriki/" target="_blank" class="social-btn">📸 Instagram</a>
+        <a href="#" class="social-btn">💬 WhatsApp</a>
+      </div>
     </div>
     <div class="footer-links">
       <h4>Layanan</h4>

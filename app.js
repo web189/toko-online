@@ -7,122 +7,22 @@ let isAdmin = false;
 let currentCategory = "all";
 let currentSort = "default";
 let editingIndex = -1;
+let chatHistory = [];
+let heroSlideIndex = 0;
+let heroInterval = null;
 
 // ===== DEFAULT PRODUCTS =====
 function getDefaultProducts() {
+  const base = Date.now();
   return [
-    {
-      id: Date.now() + 1,
-      name: "iPhone 15 Pro Max 256GB",
-      category: "elektronik",
-      price: 21999000,
-      origPrice: 25000000,
-      image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
-      stock: 15,
-      rating: 4.9,
-      sold: 234,
-      desc: "Smartphone terbaru Apple dengan chip A17 Pro, kamera 48MP, dan layar Super Retina XDR 6.7 inci. Baterai tahan lama seharian penuh.",
-      flash: true,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 2,
-      name: "Samsung Galaxy S24 Ultra",
-      category: "elektronik",
-      price: 19500000,
-      origPrice: 22000000,
-      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=400&fit=crop",
-      stock: 8,
-      rating: 4.8,
-      sold: 178,
-      desc: "Flagship Samsung terbaru dengan S Pen terintegrasi, kamera 200MP, dan layar Dynamic AMOLED 2X 6.8 inci.",
-      flash: true,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 3,
-      name: "Nike Air Jordan 1 Retro",
-      category: "fashion",
-      price: 2800000,
-      origPrice: 3500000,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
-      stock: 25,
-      rating: 4.7,
-      sold: 456,
-      desc: "Sepatu ikonik Nike Air Jordan 1 Retro High OG. Upper kulit asli berkualitas tinggi dengan bantalan udara yang nyaman.",
-      flash: false,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 4,
-      name: "Mie Ayam Premium Pak Kumis",
-      category: "makanan",
-      price: 45000,
-      origPrice: null,
-      image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=400&h=400&fit=crop",
-      stock: 100,
-      rating: 4.9,
-      sold: 1230,
-      desc: "Mie ayam premium dengan kuah kaldu ayam kampung asli, topping ayam melimpah, dan bakso sapi kenyal. Dijamin enak!",
-      flash: false,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 5,
-      name: "SK-II Facial Treatment Essence",
-      category: "kecantikan",
-      price: 1250000,
-      origPrice: 1650000,
-      image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop",
-      stock: 30,
-      rating: 4.8,
-      sold: 892,
-      desc: "Essence perawatan wajah mewah SK-II dengan kandungan Pitera™ untuk kulit lebih cerah, lembab, dan awet muda.",
-      flash: true,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 6,
-      name: "Sepatu Futsal Specs Accelerator",
-      category: "olahraga",
-      price: 380000,
-      origPrice: 450000,
-      image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&h=400&fit=crop",
-      stock: 40,
-      rating: 4.6,
-      sold: 320,
-      desc: "Sepatu futsal Specs dengan sol anti-slip khusus indoor, upper TPU yang tahan lama, dan desain aerodinamis untuk performa terbaik.",
-      flash: false,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 7,
-      name: "Kursi Gaming RGB Ergonomis",
-      category: "rumah",
-      price: 1800000,
-      origPrice: 2500000,
-      image: "https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400&h=400&fit=crop",
-      stock: 12,
-      rating: 4.5,
-      sold: 67,
-      desc: "Kursi gaming dengan sandaran lumbar adjustable, sandaran tangan 4D, dan lampu RGB. Bahan kulit PU premium, nyaman untuk gaming marathom.",
-      flash: false,
-      createdAt: Date.now()
-    },
-    {
-      id: Date.now() + 8,
-      name: "Laptop ASUS ROG Strix G16",
-      category: "elektronik",
-      price: 24500000,
-      origPrice: 28000000,
-      image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop",
-      stock: 5,
-      rating: 4.9,
-      sold: 45,
-      desc: "Laptop gaming ASUS ROG dengan Intel Core i9 Gen 13, RTX 4080, RAM 32GB, dan layar 165Hz QHD. Performa gaming tak tertandingi!",
-      flash: true,
-      createdAt: Date.now()
-    },
+    { id: base+1, name: "iPhone 15 Pro Max 256GB", category: "elektronik", price: 21999000, origPrice: 25000000, image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop", stock: 15, rating: 4.9, sold: 234, desc: "Smartphone terbaru Apple dengan chip A17 Pro, kamera 48MP, dan layar Super Retina XDR 6.7 inci. Baterai tahan lama seharian penuh.", flash: true, createdAt: base },
+    { id: base+2, name: "Samsung Galaxy S24 Ultra", category: "elektronik", price: 19500000, origPrice: 22000000, image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=400&fit=crop", stock: 8, rating: 4.8, sold: 178, desc: "Flagship Samsung terbaru dengan S Pen terintegrasi, kamera 200MP, dan layar Dynamic AMOLED 2X 6.8 inci.", flash: true, createdAt: base },
+    { id: base+3, name: "Nike Air Jordan 1 Retro", category: "fashion", price: 2800000, origPrice: 3500000, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop", stock: 25, rating: 4.7, sold: 456, desc: "Sepatu ikonik Nike Air Jordan 1 Retro High OG. Upper kulit asli berkualitas tinggi dengan bantalan udara yang nyaman.", flash: false, createdAt: base },
+    { id: base+4, name: "Mie Ayam Premium Pak Kumis", category: "makanan", price: 45000, origPrice: null, image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=400&h=400&fit=crop", stock: 100, rating: 4.9, sold: 1230, desc: "Mie ayam premium dengan kuah kaldu ayam kampung asli, topping ayam melimpah, dan bakso sapi kenyal. Dijamin enak!", flash: false, createdAt: base },
+    { id: base+5, name: "SK-II Facial Treatment Essence", category: "kecantikan", price: 1250000, origPrice: 1650000, image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop", stock: 30, rating: 4.8, sold: 892, desc: "Essence perawatan wajah mewah SK-II dengan kandungan Pitera™ untuk kulit lebih cerah, lembab, dan awet muda.", flash: true, createdAt: base },
+    { id: base+6, name: "Sepatu Futsal Specs Accelerator", category: "olahraga", price: 380000, origPrice: 450000, image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&h=400&fit=crop", stock: 40, rating: 4.6, sold: 320, desc: "Sepatu futsal Specs dengan sol anti-slip khusus indoor, upper TPU yang tahan lama, dan desain aerodinamis.", flash: false, createdAt: base },
+    { id: base+7, name: "Kursi Gaming RGB Ergonomis", category: "rumah", price: 1800000, origPrice: 2500000, image: "https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400&h=400&fit=crop", stock: 12, rating: 4.5, sold: 67, desc: "Kursi gaming dengan sandaran lumbar adjustable, sandaran tangan 4D, dan lampu RGB. Bahan kulit PU premium.", flash: false, createdAt: base },
+    { id: base+8, name: "Laptop ASUS ROG Strix G16", category: "elektronik", price: 24500000, origPrice: 28000000, image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop", stock: 5, rating: 4.9, sold: 45, desc: "Laptop gaming ASUS ROG dengan Intel Core i9 Gen 13, RTX 4080, RAM 32GB, dan layar 165Hz QHD.", flash: true, createdAt: base },
   ];
 }
 
@@ -161,17 +61,60 @@ function showToast(msg, emoji = "✅") {
   setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+// ===== DARK MODE =====
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle("dark");
+  document.getElementById("darkModeBtn").textContent = isDark ? "☀️" : "🌙";
+  localStorage.setItem("rky_dark", isDark ? "1" : "0");
+}
+
+function initDarkMode() {
+  const saved = localStorage.getItem("rky_dark");
+  if (saved === "1") {
+    document.body.classList.add("dark");
+    document.getElementById("darkModeBtn").textContent = "☀️";
+  }
+}
+
+// ===== HERO SLIDER =====
+function goToSlide(idx) {
+  const slides = document.querySelectorAll(".hero-slide");
+  const dots = document.querySelectorAll(".hero-dot");
+  if (!slides.length) return;
+  slides.forEach(s => s.classList.remove("active"));
+  dots.forEach(d => d.classList.remove("active"));
+  heroSlideIndex = (idx + slides.length) % slides.length;
+  slides[heroSlideIndex].classList.add("active");
+  if (dots[heroSlideIndex]) dots[heroSlideIndex].classList.add("active");
+}
+
+function startHeroSlider() {
+  clearInterval(heroInterval);
+  heroInterval = setInterval(() => goToSlide(heroSlideIndex + 1), 4500);
+}
+
+// ===== BACK TO TOP =====
+function initBackToTop() {
+  window.addEventListener("scroll", () => {
+    const btn = document.getElementById("backToTop");
+    if (btn) {
+      if (window.scrollY > 400) btn.classList.add("visible");
+      else btn.classList.remove("visible");
+    }
+  });
+}
+
 // ===== RENDER PRODUCT CARD =====
-function renderCard(p, idx, inWishlist = false) {
+function renderCard(p, idx) {
   const disc = discountPct(p.price, p.origPrice);
   const isWished = wishlist.includes(p.id);
   const stockPct = Math.min(100, (p.stock / 50) * 100);
-  const isLowStock = p.stock <= 5;
+  const isLowStock = p.stock <= 5 && p.stock > 0;
 
   return `
     <div class="product-card" onclick="openModal(${idx})">
       <div class="card-img-wrap">
-        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300/f1f5f9/94a3b8?text=No+Image'" loading="lazy" />
+        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/400x300/f1f5f9/94a3b8?text=No+Image'" loading="lazy" />
         <div class="card-badges">
           ${disc > 0 ? `<span class="badge-discount">-${disc}%</span>` : ""}
           ${p.flash ? `<span class="badge-flash">⚡ Flash</span>` : ""}
@@ -192,7 +135,7 @@ function renderCard(p, idx, inWishlist = false) {
         </div>
         <div class="card-meta">
           <span class="card-rating">${renderStars(p.rating)} ${p.rating}</span>
-          <span class="card-sold">${p.sold?.toLocaleString("id-ID") || 0} terjual</span>
+          <span class="card-sold">${(p.sold || 0).toLocaleString("id-ID")} terjual</span>
         </div>
         <div class="card-stock ${isLowStock ? "low" : ""}">
           ${p.stock <= 0 ? "❌ Stok habis" : isLowStock ? `⚠️ Sisa ${p.stock} lagi!` : `📦 Stok: ${p.stock}`}
@@ -220,7 +163,7 @@ function renderShop(filtered = null) {
 
   // Flash sale
   const flashProducts = products.filter(p => p.flash && p.stock > 0).slice(0, 6);
-  flashList.innerHTML = flashProducts.map((p, i) => renderCard(p, products.indexOf(p))).join("");
+  flashList.innerHTML = flashProducts.map(p => renderCard(p, products.indexOf(p))).join("");
 
   // Main list
   if (list.length === 0) {
@@ -228,7 +171,7 @@ function renderShop(filtered = null) {
     emptyState.style.display = "block";
   } else {
     emptyState.style.display = "none";
-    productList.innerHTML = list.map((p) => renderCard(p, products.indexOf(p))).join("");
+    productList.innerHTML = list.map(p => renderCard(p, products.indexOf(p))).join("");
   }
 
   document.getElementById("statProducts").textContent = products.length;
@@ -238,17 +181,18 @@ function renderShop(filtered = null) {
 function getFilteredProducts() {
   let list = [...products];
   const q = document.getElementById("searchInput")?.value.toLowerCase() || "";
-
   if (currentCategory !== "all") list = list.filter(p => p.category === currentCategory);
-  if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.desc?.toLowerCase().includes(q));
-
+  if (q) list = list.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.category.toLowerCase().includes(q) ||
+    (p.desc || "").toLowerCase().includes(q)
+  );
   switch (currentSort) {
     case "price-asc": list.sort((a, b) => a.price - b.price); break;
     case "price-desc": list.sort((a, b) => b.price - a.price); break;
     case "rating": list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
     case "newest": list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); break;
   }
-
   return list;
 }
 
@@ -308,7 +252,6 @@ function addToCart(e, id) {
   e.stopPropagation();
   const p = products.find(x => x.id === id);
   if (!p || p.stock <= 0) return;
-
   const existing = cart.find(c => c.id === id);
   if (existing) {
     if (existing.qty >= p.stock) { showToast("Stok tidak mencukupi!", "⚠️"); return; }
@@ -316,7 +259,6 @@ function addToCart(e, id) {
   } else {
     cart.push({ id, qty: 1 });
   }
-
   saveCart();
   updateCartBadge();
   showToast(`${p.name} ditambahkan ke keranjang!`, "🛒");
@@ -345,7 +287,6 @@ function renderCart() {
     document.getElementById("cartTotal").textContent = "Rp 0";
     return;
   }
-
   let total = 0;
   container.innerHTML = cart.map(c => {
     const p = products.find(x => x.id === c.id);
@@ -354,7 +295,7 @@ function renderCart() {
     total += sub;
     return `
       <div class="cart-item">
-        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60x60/f1f5f9/94a3b8?text=?'" />
+        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/60x60/f1f5f9/94a3b8?text=?'" />
         <div class="cart-item-info">
           <h4>${p.name}</h4>
           <div class="cart-price">${formatRp(p.price)}</div>
@@ -392,12 +333,11 @@ function removeCart(id) {
 
 function checkout() {
   if (cart.length === 0) return;
-
   const order = {
     id: "ORD-" + Date.now(),
     items: cart.map(c => {
       const p = products.find(x => x.id === c.id);
-      return { name: p?.name, qty: c.qty, price: p?.price };
+      return { name: p?.name || "?", qty: c.qty, price: p?.price || 0 };
     }),
     total: cart.reduce((sum, c) => {
       const p = products.find(x => x.id === c.id);
@@ -406,23 +346,19 @@ function checkout() {
     date: new Date().toLocaleDateString("id-ID"),
     status: "Diproses"
   };
-
   // Reduce stock
   cart.forEach(c => {
     const p = products.find(x => x.id === c.id);
-    if (p) { p.stock -= c.qty; p.sold = (p.sold || 0) + c.qty; }
+    if (p) { p.stock = Math.max(0, p.stock - c.qty); p.sold = (p.sold || 0) + c.qty; }
   });
   saveProducts();
-
   orders.unshift(order);
   saveOrders();
-
   cart = [];
   saveCart();
   updateCartBadge();
   closeCart();
   renderShop();
-
   showToast("Pesanan berhasil dibuat! Terima kasih 🎉", "🎉");
   updateDashboard();
 }
@@ -432,10 +368,9 @@ function openModal(idx) {
   const p = products[idx];
   if (!p) return;
   const disc = discountPct(p.price, p.origPrice);
-
   document.getElementById("modalContent").innerHTML = `
     <img class="modal-product-img" src="${p.image}" alt="${p.name}"
-      onerror="this.src='https://via.placeholder.com/520x280/f1f5f9/94a3b8?text=No+Image'" />
+      onerror="this.src='https://placehold.co/520x280/f1f5f9/94a3b8?text=No+Image'" />
     <div class="modal-product-body">
       <div class="modal-product-cat">📂 ${p.category} ${p.flash ? "• ⚡ Flash Sale" : ""}</div>
       <h2>${p.name}</h2>
@@ -458,7 +393,6 @@ function openModal(idx) {
       </div>
     </div>
   `;
-
   window._modalProductId = p.id;
   window._modalQty = 1;
   window._modalMaxQty = p.stock;
@@ -476,14 +410,12 @@ function modalAddCart(id) {
   const qty = window._modalQty || 1;
   const p = products.find(x => x.id === id);
   if (!p || p.stock <= 0) return;
-
   const existing = cart.find(c => c.id === id);
   if (existing) {
     existing.qty = Math.min(existing.qty + qty, p.stock);
   } else {
     cart.push({ id, qty });
   }
-
   saveCart();
   updateCartBadge();
   closeModal();
@@ -503,18 +435,14 @@ function closeModal(e) {
 
 // ===== ADMIN =====
 function handleAdminClick() {
-  if (isAdmin) {
-    showPage("admin");
-  } else {
-    document.getElementById("loginModal").classList.add("open");
-  }
+  if (isAdmin) showPage("admin");
+  else document.getElementById("loginModal").classList.add("open");
 }
 
 function doLogin() {
-  const user = document.getElementById("loginUser").value;
+  const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value;
-
-  if (user === "admin" && pass === "admin123") {
+  if (user === "admin" && pass === "6969") {
     isAdmin = true;
     closeLoginModal();
     document.getElementById("adminToggle").textContent = "⚙️ Panel Admin";
@@ -549,7 +477,6 @@ function showAdminTab(tab, btn) {
   document.querySelectorAll(".admin-nav-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("tab-" + tab).classList.add("active");
   if (btn) btn.classList.add("active");
-
   if (tab === "products") renderAdminProducts();
   if (tab === "orders") renderAdminOrders();
   if (tab === "dashboard") updateDashboard();
@@ -560,18 +487,16 @@ function showAdminTab(tab, btn) {
 function renderAdminProducts(filter = "") {
   const list = document.getElementById("adminProductList");
   const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-
   if (filtered.length === 0) {
     list.innerHTML = `<p class="empty-msg">Tidak ada produk ditemukan.</p>`;
     return;
   }
-
-  list.innerHTML = filtered.map((p, i) => {
+  list.innerHTML = filtered.map((p) => {
     const realIdx = products.indexOf(p);
     const disc = discountPct(p.price, p.origPrice);
     return `
       <div class="admin-product-row">
-        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60x60/f1f5f9/94a3b8?text=?'" />
+        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/60x60/f1f5f9/94a3b8?text=?'" />
         <div class="admin-product-info">
           <h4>${p.name}</h4>
           <p>${p.category} · ${formatRp(p.price)} ${disc > 0 ? `(-${disc}%)` : ""} · Stok: ${p.stock} · Terjual: ${p.sold || 0}</p>
@@ -585,9 +510,7 @@ function renderAdminProducts(filter = "") {
   }).join("");
 }
 
-function adminSearch(q) {
-  renderAdminProducts(q);
-}
+function adminSearch(q) { renderAdminProducts(q); }
 
 // ===== ADD / EDIT PRODUCT =====
 function saveProduct() {
@@ -603,25 +526,16 @@ function saveProduct() {
   const editIdx = parseInt(document.getElementById("editIndex").value);
 
   if (!name || !category || isNaN(price) || isNaN(stock) || !image) {
-    showToast("Harap isi semua kolom wajib!", "⚠️");
-    return;
+    showToast("Harap isi semua kolom wajib!", "⚠️"); return;
   }
 
   if (editIdx >= 0) {
-    // Edit mode
     products[editIdx] = { ...products[editIdx], name, category, price, origPrice, stock, rating, desc, image, flash };
     showToast("Produk berhasil diperbarui!", "✅");
   } else {
-    // Add mode
-    products.push({
-      id: Date.now(),
-      name, category, price, origPrice, stock, rating, desc, image, flash,
-      sold: 0,
-      createdAt: Date.now()
-    });
+    products.push({ id: Date.now(), name, category, price, origPrice, stock, rating, desc, image, flash, sold: 0, createdAt: Date.now() });
     showToast("Produk berhasil ditambahkan!", "✅");
   }
-
   saveProducts();
   resetForm();
   renderShop();
@@ -631,6 +545,7 @@ function saveProduct() {
 
 function editProduct(idx) {
   const p = products[idx];
+  if (!p) return;
   document.getElementById("editIndex").value = idx;
   document.getElementById("pName").value = p.name;
   document.getElementById("pCategory").value = p.category;
@@ -648,7 +563,7 @@ function editProduct(idx) {
 
 function deleteProduct(idx) {
   const p = products[idx];
-  if (!confirm(`Hapus produk "${p.name}"?`)) return;
+  if (!p || !confirm(`Hapus produk "${p.name}"?`)) return;
   products.splice(idx, 1);
   saveProducts();
   renderAdminProducts();
@@ -659,14 +574,8 @@ function deleteProduct(idx) {
 
 function resetForm() {
   document.getElementById("editIndex").value = -1;
-  document.getElementById("pName").value = "";
+  ["pName","pPrice","pOrigPrice","pStock","pRating","pDesc","pImage"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("pCategory").value = "";
-  document.getElementById("pPrice").value = "";
-  document.getElementById("pOrigPrice").value = "";
-  document.getElementById("pStock").value = "";
-  document.getElementById("pRating").value = "";
-  document.getElementById("pDesc").value = "";
-  document.getElementById("pImage").value = "";
   document.getElementById("pFlash").checked = false;
   document.getElementById("imgPreview").style.display = "none";
   document.getElementById("imgPlaceholder").style.display = "block";
@@ -691,7 +600,6 @@ function handleFileUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) { showToast("File terlalu besar! Maks 5MB", "⚠️"); return; }
-
   const reader = new FileReader();
   reader.onload = (ev) => {
     document.getElementById("pImage").value = ev.target.result;
@@ -708,7 +616,6 @@ function renderAdminOrders() {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><h3>Belum ada pesanan</h3><p>Pesanan dari pelanggan akan muncul di sini</p></div>`;
     return;
   }
-
   container.innerHTML = orders.map(o => `
     <div class="order-card">
       <div class="order-card-header">
@@ -729,8 +636,6 @@ function updateDashboard() {
   const revenue = orders.reduce((sum, o) => sum + o.total, 0);
   document.getElementById("dashRevenue").textContent = formatRp(revenue);
   document.getElementById("dashVisitors").textContent = Math.floor(Math.random() * 900 + 100).toLocaleString("id-ID");
-
-  // Recent orders
   const recentEl = document.getElementById("recentOrdersList");
   if (orders.length === 0) {
     recentEl.innerHTML = `<p class="empty-msg">Belum ada pesanan masuk.</p>`;
@@ -738,7 +643,7 @@ function updateDashboard() {
     recentEl.innerHTML = orders.slice(0, 5).map(o => `
       <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
         <div>
-          <strong>${o.id}</strong><br>
+          <strong style="color:var(--text)">${o.id}</strong><br>
           <small style="color:var(--text-muted)">${o.items.length} item · ${o.date}</small>
         </div>
         <div style="text-align:right">
@@ -753,9 +658,10 @@ function updateDashboard() {
 // ===== PAGE NAVIGATION =====
 function showPage(page) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(page + "Page").classList.add("active");
+  const target = document.getElementById(page + "Page");
+  if (!target) return;
+  target.classList.add("active");
   window.scrollTo({ top: 0, behavior: "smooth" });
-
   if (page === "wishlist") renderWishlist();
   if (page === "admin" && !isAdmin) { handleAdminClick(); return; }
 }
@@ -773,16 +679,213 @@ function updateCountdown() {
   if (el) el.textContent = `${h}:${m}:${s}`;
 }
 
-// ===== ENTER TO LOGIN =====
+// ===== AI CHATBOT =====
+function toggleChatbot() {
+  const container = document.getElementById("chatbotContainer");
+  const overlay = document.getElementById("chatbotOverlay");
+  const isOpen = container.classList.contains("open");
+  container.classList.toggle("open");
+  overlay.classList.toggle("open");
+
+  // Hide fab badge on open
+  if (!isOpen) {
+    document.getElementById("chatFabBadge").style.display = "none";
+    // Scroll to bottom
+    setTimeout(() => {
+      const msgs = document.getElementById("chatMessages");
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 300);
+  }
+}
+
+function closeChatbot(e) {
+  if (!e || e.target === document.getElementById("chatbotOverlay")) {
+    document.getElementById("chatbotContainer").classList.remove("open");
+    document.getElementById("chatbotOverlay").classList.remove("open");
+  }
+}
+
+function clearChat() {
+  chatHistory = [];
+  const msgs = document.getElementById("chatMessages");
+  msgs.innerHTML = `
+    <div class="chat-msg bot">
+      <div class="chat-bubble">
+        <p>Chat telah dihapus. Halo lagi! Saya <strong>Beny AI</strong> 👋</p>
+        <p>Ada yang bisa saya bantu?</p>
+      </div>
+      <div class="chat-time">Asisten AI</div>
+    </div>
+    <div class="chat-quick-btns">
+      <button onclick="quickChat('Produk apa yang lagi promo?')">🔥 Promo terbaru</button>
+      <button onclick="quickChat('Rekomendasi produk elektronik terbaik')">📱 Elektronik</button>
+      <button onclick="quickChat('Cara melakukan pembayaran?')">💳 Cara bayar</button>
+      <button onclick="quickChat('Produk fashion terpopuler')">👗 Fashion</button>
+    </div>
+  `;
+}
+
+function quickChat(text) {
+  document.getElementById("chatInput").value = text;
+  sendChat();
+}
+
+function addChatMessage(role, text) {
+  const msgs = document.getElementById("chatMessages");
+  const isUser = role === "user";
+  const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+
+  const div = document.createElement("div");
+  div.className = `chat-msg ${isUser ? "user" : "bot"}`;
+
+  // Format bot text with line breaks
+  const formatted = isUser ? text : text.replace(/\n/g, "<br>");
+
+  div.innerHTML = `
+    <div class="chat-bubble">${isUser ? text : `<p>${formatted}</p>`}</div>
+    <div class="chat-time">${time}</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function buildProductContext() {
+  const flashItems = products.filter(p => p.flash && p.stock > 0).slice(0, 5);
+  const topRated = [...products].sort((a,b) => (b.rating||0) - (a.rating||0)).slice(0, 5);
+  const categories = [...new Set(products.map(p => p.category))];
+
+  return `Kamu adalah asisten belanja AI yang ramah bernama "Beny AI" untuk toko online "@benyoriki Store". 
+Toko ini berbasis di Indonesia dengan mata uang Rupiah (Rp).
+
+Info Toko:
+- Total produk: ${products.length}
+- Kategori: ${categories.join(", ")}
+- Gratis ongkir ke seluruh Indonesia
+- Return 30 hari
+- Rating toko: 4.9/5
+- Pembayaran: VISA, Mastercard, Transfer Bank, GoPay, OVO
+
+Flash Sale saat ini (${flashItems.length} produk):
+${flashItems.map(p => `- ${p.name}: ${formatRp(p.price)}${p.origPrice ? ` (diskon dari ${formatRp(p.origPrice)})` : ""}, stok: ${p.stock}, rating: ${p.rating}`).join("\n")}
+
+Produk rating terbaik:
+${topRated.map(p => `- ${p.name} (${p.category}): ${formatRp(p.price)}, rating: ${p.rating}, terjual: ${p.sold||0}`).join("\n")}
+
+Gunakan bahasa Indonesia yang santai, ramah, dan helpful. Rekomendasikan produk dari toko ini. Jika ditanya harga, berikan informasi yang akurat dari data di atas. Jawaban singkat dan to-the-point. Gunakan emoji sesekali. Maksimal 3-4 kalimat per jawaban.`;
+}
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  addChatMessage("user", text);
+  chatHistory.push({ role: "user", content: text });
+
+  // Show typing
+  const typing = document.getElementById("chatTyping");
+  typing.style.display = "flex";
+  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+
+  try {
+    const systemPrompt = buildProductContext();
+    const messages = chatHistory.slice(-10); // Keep last 10 for context
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    const data = await response.json();
+    typing.style.display = "none";
+
+    if (data.content && data.content[0]) {
+      const reply = data.content[0].text;
+      addChatMessage("bot", reply);
+      chatHistory.push({ role: "assistant", content: reply });
+    } else if (data.error) {
+      throw new Error(data.error.message || "API error");
+    }
+  } catch (err) {
+    typing.style.display = "none";
+    // Fallback offline responses
+    const offlineReply = getOfflineReply(text);
+    addChatMessage("bot", offlineReply);
+    chatHistory.push({ role: "assistant", content: offlineReply });
+    console.warn("AI API error, using offline mode:", err.message);
+  }
+}
+
+function getOfflineReply(text) {
+  const lower = text.toLowerCase();
+  const flashItems = products.filter(p => p.flash && p.stock > 0).slice(0, 3);
+  const topRated = [...products].sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0, 3);
+
+  if (lower.includes("promo") || lower.includes("flash") || lower.includes("diskon")) {
+    return `🔥 Flash Sale sekarang:\n${flashItems.map(p => `• ${p.name} — ${formatRp(p.price)}`).join("\n")}\n\nBuruan sebelum kehabisan! ⚡`;
+  }
+  if (lower.includes("elektronik") || lower.includes("hp") || lower.includes("laptop") || lower.includes("gadget")) {
+    const elProd = products.filter(p => p.category === "elektronik").slice(0, 3);
+    return `📱 Produk elektronik terpopuler:\n${elProd.map(p => `• ${p.name} — ${formatRp(p.price)}`).join("\n")}\n\nKlik produk untuk lihat detail lengkapnya!`;
+  }
+  if (lower.includes("fashion") || lower.includes("baju") || lower.includes("sepatu")) {
+    const fProd = products.filter(p => p.category === "fashion").slice(0, 3);
+    return `👗 Produk fashion trending:\n${fProd.map(p => `• ${p.name} — ${formatRp(p.price)}`).join("\n")}\n\nSemua produk 100% original!`;
+  }
+  if (lower.includes("bayar") || lower.includes("pembayaran") || lower.includes("transfer")) {
+    return `💳 Metode pembayaran yang tersedia:\n• Transfer Bank\n• GoPay\n• OVO\n• VISA / Mastercard\n\nSemua transaksi aman & terenkripsi! 🔒`;
+  }
+  if (lower.includes("ongkir") || lower.includes("pengiriman") || lower.includes("kirim")) {
+    return `🚀 Kabar baik! Pengiriman GRATIS ke seluruh Indonesia tanpa minimum pembelian. Estimasi tiba 2-5 hari kerja. 📦`;
+  }
+  if (lower.includes("return") || lower.includes("retur") || lower.includes("kembali")) {
+    return `🔄 Kebijakan return kami: 30 hari garansi uang kembali jika produk tidak sesuai. Hubungi kami via Instagram @benyoriki untuk proses return.`;
+  }
+  if (lower.includes("rekomendasi") || lower.includes("saran") || lower.includes("terbaik")) {
+    return `⭐ Produk terlaris dengan rating tertinggi:\n${topRated.map(p => `• ${p.name} ⭐${p.rating} — ${formatRp(p.price)}`).join("\n")}\n\nSemuanya best seller di toko kami!`;
+  }
+  if (lower.includes("halo") || lower.includes("hi") || lower.includes("hello")) {
+    return `Halo! 👋 Selamat datang di @benyoriki Store! Saya Beny AI, siap bantu kamu belanja. Ada yang bisa saya rekomendasikan? 🛍️`;
+  }
+  return `Terima kasih sudah bertanya! 😊 Kami punya ${products.length} produk pilihan dengan harga terbaik. Coba tanya tentang produk spesifik, promo, atau cara pemesanan ya!`;
+}
+
+// ===== KEYBOARD SHORTCUTS =====
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && document.getElementById("loginModal").classList.contains("open")) doLogin();
+  // Enter to login
+  if (e.key === "Enter" && document.getElementById("loginModal").classList.contains("open")) {
+    doLogin();
+  }
+  // Escape to close modals
+  if (e.key === "Escape") {
+    closeModal();
+    closeLoginModal();
+    closeChatbot();
+    closeCart();
+  }
 });
 
 // ===== INIT =====
 window.addEventListener("DOMContentLoaded", () => {
+  initDarkMode();
   renderShop();
   updateCartBadge();
   updateWishBadge();
   updateCountdown();
   setInterval(updateCountdown, 1000);
+  startHeroSlider();
+  initBackToTop();
+
+  // Show chatbot badge after delay to attract attention
+  setTimeout(() => {
+    const badge = document.getElementById("chatFabBadge");
+    if (badge) badge.style.display = "flex";
+  }, 3000);
 });
