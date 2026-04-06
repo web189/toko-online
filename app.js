@@ -942,8 +942,9 @@ function getOfflineReply(text) {
 }
 
 // ===== KEYBOARD SHORTCUTS =====
-// Secret admin access: ketik "admin" di mana saja (tersembunyi dari pengunjung)
 let _secretBuf = "";
+let _secretTimer = null;
+
 document.addEventListener("keydown", e => {
   // Enter to login
   if (e.key === "Enter" && document.getElementById("loginModal").classList.contains("open")) {
@@ -957,16 +958,48 @@ document.addEventListener("keydown", e => {
     closeCart();
     closeReceipt();
   }
-  // Secret admin shortcut: ketik "benyoadmin" untuk buka login
+  // Secret admin shortcut - works even inside input fields
+  // Ketik "benyoadmin" kapan saja untuk buka login
   if (e.key.length === 1) {
     _secretBuf += e.key.toLowerCase();
-    if (_secretBuf.length > 10) _secretBuf = _secretBuf.slice(-10);
+    if (_secretBuf.length > 12) _secretBuf = _secretBuf.slice(-12);
+    // Reset buffer after 3 seconds of inactivity
+    clearTimeout(_secretTimer);
+    _secretTimer = setTimeout(() => { _secretBuf = ""; }, 3000);
     if (_secretBuf.includes("benyoadmin")) {
       _secretBuf = "";
-      if (!isAdmin) document.getElementById("loginModal").classList.add("open");
+      if (!isAdmin) {
+        document.getElementById("loginModal").classList.add("open");
+        // Focus username field
+        setTimeout(() => {
+          const u = document.getElementById("loginUser");
+          if (u) u.focus();
+        }, 100);
+      }
     }
   }
 });
+
+// ===== SECRET ADMIN BUTTON (logo klik 5x) =====
+let _logoClickCount = 0;
+let _logoClickTimer = null;
+window.adminSecretLogoClick = function() {
+  _logoClickCount++;
+  clearTimeout(_logoClickTimer);
+  _logoClickTimer = setTimeout(() => { _logoClickCount = 0; }, 2000);
+  if (_logoClickCount >= 5) {
+    _logoClickCount = 0;
+    if (!isAdmin) {
+      document.getElementById("loginModal").classList.add("open");
+      setTimeout(() => {
+        const u = document.getElementById("loginUser");
+        if (u) u.focus();
+      }, 100);
+    } else {
+      showPage("admin");
+    }
+  }
+};
 
 // ===== INIT =====
 window.addEventListener("DOMContentLoaded", () => {
@@ -978,6 +1011,17 @@ window.addEventListener("DOMContentLoaded", () => {
   setInterval(updateCountdown, 1000);
   startHeroSlider();
   initBackToTop();
+
+  // Secret URL access: tambahkan ?admin di URL
+  if (window.location.search.includes("admin") || window.location.hash === "#admin") {
+    if (!isAdmin) {
+      setTimeout(() => {
+        document.getElementById("loginModal").classList.add("open");
+        const u = document.getElementById("loginUser");
+        if (u) u.focus();
+      }, 600);
+    }
+  }
 
   // Show chatbot badge after delay to attract attention
   setTimeout(() => {
