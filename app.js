@@ -343,7 +343,7 @@ function checkout() {
       const p = products.find(x => x.id === c.id);
       return sum + (p?.price || 0) * c.qty;
     }, 0),
-    date: new Date().toLocaleDateString("id-ID"),
+    date: new Date().toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit" }),
     status: "Diproses"
   };
   // Reduce stock
@@ -359,8 +359,90 @@ function checkout() {
   updateCartBadge();
   closeCart();
   renderShop();
-  showToast("Pesanan berhasil dibuat! Terima kasih 🎉", "🎉");
+  showToast("Pesanan berhasil! Struk ditampilkan 🎉", "🎉");
   updateDashboard();
+  showReceipt(order);
+}
+
+// ===== RECEIPT / STRUK =====
+function showReceipt(order) {
+  document.getElementById("receiptOrderId").textContent = order.id;
+  document.getElementById("receiptDate").textContent = order.date;
+
+  // Render item rows
+  let subtotal = 0;
+  const rows = order.items.map(item => {
+    const lineTotal = item.price * item.qty;
+    subtotal += lineTotal;
+    return `
+      <div class="receipt-item-row">
+        <div class="receipt-item-name">${item.name}</div>
+        <div class="receipt-item-detail">
+          <span class="receipt-item-qty">${item.qty} x ${formatRp(item.price)}</span>
+          <span class="receipt-item-total">${formatRp(lineTotal)}</span>
+        </div>
+      </div>`;
+  }).join("");
+
+  document.getElementById("receiptItemsList").innerHTML = rows;
+  document.getElementById("receiptSubtotal").textContent = formatRp(subtotal);
+  document.getElementById("receiptGrandTotal").textContent = formatRp(subtotal);
+
+  // Store order ref for WA send
+  window._lastOrder = order;
+
+  document.getElementById("receiptOverlay").classList.add("open");
+}
+
+function closeReceipt() {
+  document.getElementById("receiptOverlay").classList.remove("open");
+}
+
+function downloadReceiptJPG() {
+  const el = document.getElementById("receiptContent");
+  const btn = document.querySelector(".receipt-btn-download");
+  if (btn) { btn.textContent = "⏳ Memproses..."; btn.disabled = true; }
+
+  // Use html2canvas if available, else fallback
+  if (typeof html2canvas !== "undefined") {
+    html2canvas(el, { scale: 2, backgroundColor: "#fff", useCORS: true }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = `struk-${window._lastOrder?.id || "belanja"}.jpg`;
+      link.href = canvas.toDataURL("image/jpeg", 0.95);
+      link.click();
+      if (btn) { btn.textContent = "⬇️ Download JPG"; btn.disabled = false; }
+    });
+  } else {
+    // Load html2canvas dynamically
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    script.onload = () => {
+      html2canvas(el, { scale: 2, backgroundColor: "#fff", useCORS: true }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = `struk-${window._lastOrder?.id || "belanja"}.jpg`;
+        link.href = canvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+        if (btn) { btn.textContent = "⬇️ Download JPG"; btn.disabled = false; }
+      });
+    };
+    document.head.appendChild(script);
+  }
+}
+
+function sendReceiptWA() {
+  const order = window._lastOrder;
+  if (!order) return;
+  const items = order.items.map(i => `• ${i.name} x${i.qty} = ${formatRp(i.price * i.qty)}`).join("\n");
+  const msg = `🧾 *STRUK BELANJA @benyoriki Store*\n\n` +
+    `No. Pesanan: *${order.id}*\n` +
+    `Tanggal: ${order.date}\n\n` +
+    `*DAFTAR BELANJA:*\n${items}\n\n` +
+    `─────────────────\n` +
+    `Ongkir: GRATIS 🎉\n` +
+    `*TOTAL BAYAR: ${formatRp(order.total)}*\n\n` +
+    `Terima kasih sudah belanja di @benyoriki Store! 🙏\nInstagram: @benyoriki`;
+  const encoded = encodeURIComponent(msg);
+  window.open(`https://wa.me/628988995637?text=${encoded}`, "_blank");
 }
 
 // ===== PRODUCT MODAL =====
@@ -445,7 +527,9 @@ function doLogin() {
   if (user === "admin" && pass === "6969") {
     isAdmin = true;
     closeLoginModal();
-    document.getElementById("adminToggle").textContent = "⚙️ Panel Admin";
+    const btn = document.getElementById("adminToggle");
+    btn.textContent = "⚙️ Panel Admin";
+    btn.classList.add("admin-visible");
     showPage("admin");
     updateDashboard();
     renderAdminProducts();
@@ -858,6 +942,8 @@ function getOfflineReply(text) {
 }
 
 // ===== KEYBOARD SHORTCUTS =====
+// Secret admin access: ketik "admin" di mana saja (tersembunyi dari pengunjung)
+let _secretBuf = "";
 document.addEventListener("keydown", e => {
   // Enter to login
   if (e.key === "Enter" && document.getElementById("loginModal").classList.contains("open")) {
@@ -869,6 +955,16 @@ document.addEventListener("keydown", e => {
     closeLoginModal();
     closeChatbot();
     closeCart();
+    closeReceipt();
+  }
+  // Secret admin shortcut: ketik "benyoadmin" untuk buka login
+  if (e.key.length === 1) {
+    _secretBuf += e.key.toLowerCase();
+    if (_secretBuf.length > 10) _secretBuf = _secretBuf.slice(-10);
+    if (_secretBuf.includes("benyoadmin")) {
+      _secretBuf = "";
+      if (!isAdmin) document.getElementById("loginModal").classList.add("open");
+    }
   }
 });
 

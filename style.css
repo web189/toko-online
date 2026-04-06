@@ -1702,3 +1702,263 @@ footer {
   .modal-actions { flex-direction: column; }
   .chat-quick-btns button { font-size: .72rem; padding: 5px 10px; }
 }
+/* ===== ADMIN HIDDEN BUTTON ===== */
+/* Sembunyikan tombol admin dari pengunjung biasa */
+.admin-hidden-btn {
+  position: fixed !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* Tapi tetap bisa diakses saat admin sudah login via JS */
+.admin-hidden-btn.admin-visible {
+  position: static !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  padding: 8px 16px !important;
+}
+
+/* ===== LOGO FAVICON IMAGE ===== */
+.logo-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 4px;
+  vertical-align: middle;
+  border-radius: 6px;
+}
+
+/* ===== RECEIPT / STRUK MODAL ===== */
+.receipt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.receipt-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.receipt-modal {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-height: 90vh;
+  width: 100%;
+  max-width: 400px;
+  transform: translateY(30px);
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.receipt-overlay.open .receipt-modal {
+  transform: translateY(0);
+}
+
+/* Kertas struk */
+.receipt-paper {
+  background: #fff;
+  color: #111;
+  border-radius: 12px;
+  padding: 28px 24px 20px;
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  overflow-y: auto;
+  max-height: 65vh;
+}
+
+.receipt-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.receipt-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.receipt-logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.receipt-store-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #f97316;
+  letter-spacing: -0.5px;
+}
+.receipt-tagline {
+  font-size: .72rem;
+  color: #666;
+  margin-bottom: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.receipt-divider-dashes {
+  border-top: 2px dashed #ddd;
+  margin: 10px 0;
+}
+.receipt-divider-solid {
+  border-top: 2px solid #222;
+  margin: 8px 0;
+}
+
+.receipt-meta {
+  font-size: .78rem;
+  color: #333;
+}
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+.receipt-status {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.receipt-items-title {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #888;
+  margin: 4px 0 8px;
+  text-align: center;
+}
+
+.receipt-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.receipt-item-row {
+  font-size: .8rem;
+  color: #222;
+}
+.receipt-item-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+.receipt-item-detail {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+  font-size: .75rem;
+}
+.receipt-item-total {
+  font-weight: 700;
+  color: #222;
+}
+
+.receipt-totals {
+  font-size: .8rem;
+}
+.receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  color: #444;
+}
+.receipt-free {
+  color: #16a34a;
+  font-weight: 700;
+}
+.receipt-grand-total {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f97316 !important;
+  padding: 4px 0 !important;
+}
+
+.receipt-footer-note {
+  text-align: center;
+  margin-top: 4px;
+  font-size: .72rem;
+  color: #888;
+  line-height: 1.8;
+}
+.receipt-barcode {
+  font-size: .75rem;
+  letter-spacing: 2px;
+  color: #ccc;
+  margin-top: 6px;
+  font-family: monospace;
+}
+
+/* Receipt action buttons */
+.receipt-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.receipt-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.receipt-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.receipt-btn-close {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.35);
+}
+.receipt-btn-download {
+  background: #1e293b;
+  color: #fff;
+}
+.receipt-btn-wa {
+  background: #25d366;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .receipt-paper { padding: 20px 16px 16px; }
+  .receipt-actions { flex-direction: column; }
+  .receipt-btn { width: 100%; }
+}
+
+.logo1-icon-img {
+  width: 80px; /* sesuaikan */
+  height: auto;
+}
